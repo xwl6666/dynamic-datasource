@@ -74,6 +74,8 @@ public class DefaultDataSourceCreator {
      */
     public DataSource createDataSource(DataSourceProperty dataSourceProperty) {
         DataSourceCreator dataSourceCreator = null;
+        // 寻找对应的数据源创建器
+        // 根据对应的 dataSourceProperty 对象中的属性 type，来判断使用哪个 creator 来创建数据源 dataSource 对象
         for (DataSourceCreator creator : this.creators) {
             if (creator.support(dataSourceProperty)) {
                 dataSourceCreator = creator;
@@ -94,11 +96,13 @@ public class DefaultDataSourceCreator {
         if (dataSourceInitEvent != null) {
             dataSourceInitEvent.beforeCreate(dataSourceProperty);
         }
+        // 通过数据源创建器创建数据源
         DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
         if (dataSourceInitEvent != null) {
             dataSourceInitEvent.afterCreate(dataSource);
         }
         this.runScrip(dataSource, dataSourceProperty);
+        // 对数据源包装后返回
         return wrapDataSource(dataSource, dataSourceProperty);
     }
 

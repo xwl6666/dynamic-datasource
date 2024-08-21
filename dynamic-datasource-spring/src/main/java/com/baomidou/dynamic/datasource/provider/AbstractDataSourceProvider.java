@@ -39,6 +39,7 @@ public abstract class AbstractDataSourceProvider implements DynamicDataSourcePro
      * @param dataSourcePropertiesMap 数据源参数Map
      * @return 数据源Map
      */
+    // 根据数据源配置 dataSourcePropertiesMap 创建数据源 DataSource
     protected Map<String, DataSource> createDataSourceMap(
             Map<String, DataSourceProperty> dataSourcePropertiesMap) {
         Map<String, DataSource> dataSourceMap = new HashMap<>(dataSourcePropertiesMap.size() * 2);

@@ -1,2 +1,3 @@
+# SpringBoot 自动装配配置，引入自动配置类 DynamicDataSourceAutoConfiguration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration

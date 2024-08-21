@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
+ * 动态数据源切面通知
  * DynamicDataSource Annotation Pointcut
  *
  * @author TaoYu
@@ -45,16 +46,16 @@ import java.lang.reflect.Proxy;
 public class DynamicDataSourceAnnotationAdvisor extends AbstractPointcutAdvisor implements BeanFactoryAware {
 
     /**
-     * the advice
+     * 通知
      */
     private final Advice advice;
     /**
-     * the pointcut
+     * 切入点
      */
     private final Pointcut pointcut;
 
     /**
-     * the annotation
+     * @DS 注解
      */
     private final Class<? extends Annotation> annotation;
 
@@ -89,8 +90,11 @@ public class DynamicDataSourceAnnotationAdvisor extends AbstractPointcutAdvisor 
     }
 
     private Pointcut buildPointcut() {
+        // 类级别
         Pointcut cpc = new AnnotationMatchingPointcut(annotation, true);
+        // 方法级别
         Pointcut mpc = new AnnotationMethodPoint(annotation);
+        // 合并类和方法上添加的注解，类上的注解会绑定到每个方法上。
         return new ComposablePointcut(cpc).union(mpc);
     }
 

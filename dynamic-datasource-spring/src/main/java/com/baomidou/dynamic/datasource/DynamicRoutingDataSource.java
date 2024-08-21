@@ -46,6 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author TaoYu Kanyuxia
  * @since 1.0.0
  */
+// 该类实现了 InitializingBean 接口，可以在 bean 初始化时做一些操作
 @Slf4j
 public class DynamicRoutingDataSource extends AbstractRoutingDataSource implements InitializingBean, DisposableBean {
 
@@ -53,6 +54,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
     /**
      * 所有数据库
      */
+    // 存放数据源信息，@DS 注解中的数据源名称当 key，可以拿到这个数据源 DataSource 的 value
     private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
     /**
      * 分组数据库
@@ -76,18 +78,20 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
         this.providers = providers;
     }
 
+    // 获取默认数据源名称
     @Override
     protected String getPrimary() {
         return primary;
     }
 
+    // 决定当前使用哪个数据源，取栈顶的数据源
     @Override
     public DataSource determineDataSource() {
         String dsKey = DynamicDataSourceContextHolder.peek();
         return getDataSource(dsKey);
     }
 
-
+    // 取默认 primary 主数据源
     private DataSource determinePrimaryDataSource() {
         log.debug("dynamic-datasource switch to the primary datasource");
         DataSource dataSource = dataSourceMap.get(primary);
@@ -126,6 +130,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
      * @return 数据源
      */
     public DataSource getDataSource(String ds) {
+        // 如果上次入栈的数据源为空，取默认数据源
         if (DsStrUtils.isEmpty(ds)) {
             return determinePrimaryDataSource();
         } else if (!groupDataSources.isEmpty() && groupDataSources.containsKey(ds)) {
@@ -133,6 +138,7 @@ public class DynamicRoutingDataSource extends AbstractRoutingDataSource implemen
             return groupDataSources.get(ds).determineDataSource();
         } else if (dataSourceMap.containsKey(ds)) {
             log.debug("dynamic-datasource switch to the datasource named [{}]", ds);
+            // 否则获取对应数据源，完成数据源切换
             return dataSourceMap.get(ds);
         }
         if (strict) {

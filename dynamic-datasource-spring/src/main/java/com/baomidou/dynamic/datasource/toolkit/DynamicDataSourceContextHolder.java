@@ -36,6 +36,9 @@ public final class DynamicDataSourceContextHolder {
      * 传统的只设置当前线程的方式不能满足此业务需求，必须使用栈，后进先出。
      * </pre>
      */
+    // 存储数据源，ThreadLocal 内部使用栈
+    // 之所以用栈存储数据源，是因为可以调用不同方法时可能操作的是不同数据源，
+    // 而方法调用就是栈的形式，从而使得执行不同方法能操作到对应数据源
     private static final ThreadLocal<Deque<String>> LOOKUP_KEY_HOLDER = new NamedThreadLocal<Deque<String>>("dynamic-datasource") {
         @Override
         protected Deque<String> initialValue() {

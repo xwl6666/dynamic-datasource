@@ -48,6 +48,7 @@ import org.springframework.context.expression.BeanFactoryResolver;
  */
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @Configuration(proxyBeanMethods = false)
+// Spring AOP 切面配置类，通过 AOP 切面实现方法执行前动态切换数据源的功能
 public class DynamicDataSourceAopConfiguration {
 
     private final DynamicDataSourceProperties properties;
@@ -75,17 +76,24 @@ public class DynamicDataSourceAopConfiguration {
         return headerProcessor;
     }
 
+    // 注册了两个切面通知
+
+    // 数据源相关切面
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
     @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX + ".aop", name = "enabled", havingValue = "true", matchIfMissing = true)
     public Advisor dynamicDatasourceAnnotationAdvisor(DsProcessor dsProcessor) {
         DynamicDatasourceAopProperties aopProperties = properties.getAop();
         DynamicDataSourceAnnotationInterceptor interceptor = new DynamicDataSourceAnnotationInterceptor(aopProperties.getAllowedPublicOnly(), dsProcessor);
+        // 注册 DynamicDataSourceAnnotationAdvisor，
+        // advisor 里面的拦截器 DynamicDataSourceAnnotationInterceptor 可以拦截 @DS 注解
+        // 并根据注解中指定的数据源名称来动态切换数据源
         DynamicDataSourceAnnotationAdvisor advisor = new DynamicDataSourceAnnotationAdvisor(interceptor, DS.class);
         advisor.setOrder(aopProperties.getOrder());
         return advisor;
     }
 
+    // 事务相关切面
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
     @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX, name = "seata", havingValue = "false", matchIfMissing = true)

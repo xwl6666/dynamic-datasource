@@ -44,8 +44,12 @@ import java.util.List;
  */
 @Slf4j
 @Configuration
+// 需要在 DataSourceAutoConfiguration 自动配置前，注入我们的配置类 DynamicDataSourceAutoConfiguration
 @AutoConfigureBefore(value = DataSourceAutoConfiguration.class, name = "com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure")
-@Import({DruidDynamicDataSourceConfiguration.class, DynamicDataSourceCreatorAutoConfiguration.class, DynamicDataSourceAopConfiguration.class, DynamicDataSourceAssistConfiguration.class})
+// 自动引入相关配置
+@Import({DruidDynamicDataSourceConfiguration.class, DynamicDataSourceCreatorAutoConfiguration.class,
+        DynamicDataSourceAopConfiguration.class, DynamicDataSourceAssistConfiguration.class})
+// 当含有 spring.datasource.dynamic 配置时，这个自动配置类才生效
 @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 public class DynamicDataSourceAutoConfiguration implements InitializingBean {
 
@@ -60,9 +64,15 @@ public class DynamicDataSourceAutoConfiguration implements InitializingBean {
         this.dataSourcePropertiesCustomizers = dataSourcePropertiesCustomizers.getIfAvailable();
     }
 
+    /**
+     * 注册自己的动态多数据源 DataSource
+     * @param providers
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     public DataSource dataSource(List<DynamicDataSourceProvider> providers) {
+        // DynamicRoutingDataSource 是一个动态路由的数据源，内部维护的 dataMap 存放各个数据源信息
         DynamicRoutingDataSource dataSource = new DynamicRoutingDataSource(providers);
         dataSource.setPrimary(properties.getPrimary());
         dataSource.setStrict(properties.getStrict());
