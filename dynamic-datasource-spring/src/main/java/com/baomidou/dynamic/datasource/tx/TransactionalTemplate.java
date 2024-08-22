@@ -42,6 +42,7 @@ public class TransactionalTemplate {
         DsPropagation propagation = transactionInfo.propagation;
         SuspendedResourcesHolder suspendedResourcesHolder = null;
         try {
+            // 根据不同的事务传播行为，来进行操作
             switch (propagation) {
                 case NOT_SUPPORTED:
                     // If transaction is existing, suspend it.
@@ -112,21 +113,25 @@ public class TransactionalTemplate {
         }
         boolean state = true;
         Object o;
+        // 开启事务
         String xid = LocalTxUtil.startTransaction();
         boolean shouldInvokeAction = TransactionContext.getSynchronizations().isEmpty();
         try {
             o = transactionalExecutor.execute();
         } catch (Exception e) {
+            // 如果有异常抛出，并执行回滚
             state = !isRollback(e, transactionInfo);
             throw e;
         } finally {
             invokeBeforeCompletion(shouldInvokeAction);
             if (state) {
                 invokeBeforeCommit(shouldInvokeAction);
+                // 事务提交
                 LocalTxUtil.commit(xid);
                 invokeAfterCommit(shouldInvokeAction);
                 invokeAfterCompletion(TransactionSynchronization.STATUS_COMMITTED, shouldInvokeAction);
             } else {
+                // 事务回滚
                 LocalTxUtil.rollback(xid);
                 invokeAfterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK, shouldInvokeAction);
             }

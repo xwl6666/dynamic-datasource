@@ -20,6 +20,8 @@ import com.baomidou.dynamic.datasource.tx.DsPropagation;
 import java.lang.annotation.*;
 
 /**
+ * 多数据源事务
+ * Spring 的 @Transactional() 不支持多数据源
  * multi data source transaction
  *
  * @author funkye

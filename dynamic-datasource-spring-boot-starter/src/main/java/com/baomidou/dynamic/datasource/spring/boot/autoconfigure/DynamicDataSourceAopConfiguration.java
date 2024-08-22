@@ -78,7 +78,7 @@ public class DynamicDataSourceAopConfiguration {
 
     // 注册了两个切面通知
 
-    // 数据源相关切面
+    // 数据源相关切面 @DS
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
     @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX + ".aop", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -93,12 +93,13 @@ public class DynamicDataSourceAopConfiguration {
         return advisor;
     }
 
-    // 事务相关切面
+    // 事务相关切面 @DSTransactional
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
     @ConditionalOnProperty(prefix = DynamicDataSourceProperties.PREFIX, name = "seata", havingValue = "false", matchIfMissing = true)
     public Advisor dynamicTransactionAdvisor() {
         DynamicDatasourceAopProperties aopProperties = properties.getAop();
+        // advisor 中的拦截器 DynamicLocalTransactionInterceptor 可以拦截 @DSTransactional 注解
         DynamicLocalTransactionInterceptor interceptor = new DynamicLocalTransactionInterceptor(aopProperties.getAllowedPublicOnly());
         return new DynamicDataSourceAnnotationAdvisor(interceptor, DSTransactional.class);
     }

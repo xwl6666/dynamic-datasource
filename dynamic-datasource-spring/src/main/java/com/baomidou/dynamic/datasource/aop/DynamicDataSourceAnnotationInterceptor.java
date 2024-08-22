@@ -23,6 +23,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 /**
+ * 动态数据源核心拦截器
  * Core Interceptor of Dynamic Datasource
  * 拦截器，拦截 @DS 注解
  *

@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
+ * 通过 nofity 方法进行提交和回滚
  * @author funkye
  */
 @Slf4j
@@ -33,8 +34,10 @@ import java.util.concurrent.Executor;
 @Setter
 public class ConnectionProxy implements Connection {
 
+    // Connection 连接对象
     private Connection connection;
 
+    // 数据源名称
     private String ds;
 
     private int savepointCounter = 0;

@@ -27,6 +27,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import java.lang.reflect.Method;
 
 /**
+ * 动态数据源事务拦截器
  * Dynamic DataSource Transaction Interceptor
  *
  * @author funkye

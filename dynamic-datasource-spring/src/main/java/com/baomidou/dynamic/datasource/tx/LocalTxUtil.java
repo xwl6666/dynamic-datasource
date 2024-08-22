@@ -74,6 +74,8 @@ public final class LocalTxUtil {
             log.debug("dynamic-datasource exist local tx [{}]", xid);
         } else {
             xid = randomUUID().toString();
+            // 开启事务时，将事务 id xid 存入 ThreadLocal 的 holder，从而实现开启本地事务
+            // 拦截器的 invoke 方法中会校验 holder 中 xid 是否为空。如果已存在事务 id，就直接执行目标方法
             TransactionContext.bind(xid);
             log.debug("dynamic-datasource start local tx [{}]", xid);
         }
@@ -86,6 +88,9 @@ public final class LocalTxUtil {
      * @param xid 事务ID
      */
     public static void commit(String xid) throws Exception {
+        // 提交和回滚由 ConnectionFactory 实现，
+        // ConnectionFactory 中 CONNECTION_HOLDER 存放数据源名称和 ConnectionProxy 的对应关系
+        // 而 ConnectionProxy 是真正实现提交和回滚的类
         boolean hasSavepoint = ConnectionFactory.hasSavepoint(xid);
         try {
             ConnectionFactory.notify(xid, true);
